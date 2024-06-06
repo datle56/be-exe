@@ -1,0 +1,202 @@
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, Boolean, Date, Time
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+    balance = Column(Integer, default=0)
+
+class Tutor(Base):
+    __tablename__ = "tutors"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+    balance = Column(Integer, default=0)
+
+class Course(Base):
+    __tablename__ = "courses"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    title = Column(String, index=True)
+    description = Column(Text)
+    tutor_id = Column(Integer, ForeignKey('tutors.id'))
+
+    tutor = relationship("Tutor", back_populates="courses")
+
+Tutor.courses = relationship("Course", back_populates="tutor")
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    rating = Column(Integer)
+    comment = Column(Text)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    tutor_id = Column(Integer, ForeignKey('tutors.id'))
+    is_from_tutor = Column(Boolean)
+
+class Admin(Base):
+    __tablename__ = "admins"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    amount = Column(Integer)
+    timestamp = Column(DateTime)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    status = Column(String)
+
+class History(Base):
+    __tablename__ = "histories"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    action = Column(String)
+    timestamp = Column(DateTime)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+class Availability(Base):
+    __tablename__ = "availabilities"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    date = Column(Date)
+    start_time = Column(Time)
+    end_time = Column(Time)
+    tutor_id = Column(Integer, ForeignKey('tutors.id'))
+
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    date = Column(Date)
+    start_time = Column(Time)
+    end_time = Column(Time)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    tutor_id = Column(Integer, ForeignKey('tutors.id'))
+    duration = Column(Integer)
+
+class DailyLearningTime(Base):
+    __tablename__ = "daily_learning_times"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    date = Column(Date)
+    learning_time = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+class DailyTeachingTime(Base):
+    __tablename__ = "daily_teaching_times"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    date = Column(Date)
+    teaching_time = Column(Integer)
+    tutor_id = Column(Integer, ForeignKey('tutors.id'))
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    balance INT DEFAULT 0
+);
+
+CREATE TABLE tutors (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    balance INT DEFAULT 0
+);
+
+CREATE TABLE courses (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255),
+    description TEXT,
+    tutor_id INT,
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id)
+);
+
+CREATE TABLE reviews (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    rating INT,
+    comment TEXT,
+    user_id INT,
+    tutor_id INT,
+    is_from_tutor BOOLEAN,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id)
+);
+
+CREATE TABLE admins (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255)
+);
+
+CREATE TABLE payments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    amount INT,
+    timestamp DATETIME,
+    user_id INT,
+    status VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE histories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    action VARCHAR(255),
+    timestamp DATETIME,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE availabilities (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    tutor_id INT,
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id)
+);
+
+CREATE TABLE bookings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    user_id INT,
+    tutor_id INT,
+    duration INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id)
+);
+
+CREATE TABLE daily_learning_times (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE,
+    learning_time INT,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE daily_teaching_times (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE,
+    teaching_time INT,
+    tutor_id INT,
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id)
+);

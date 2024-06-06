@@ -1,0 +1,172 @@
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/root/code/product/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [2550] using WatchFiles
+/root/code/product/backend/venv/lib/python3.10/site-packages/pydantic/_internal/_config.py:334: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/root/code/product/backend/venv/lib/python3.10/site-packages/pydantic/_internal/_config.py:334: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [2553]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:48208 - "OPTIONS /admin/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "OPTIONS /admin/tutors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "GET /admin/tutors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "OPTIONS /admin/cv/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "GET /admin/cv/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "OPTIONS /admin/payments HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "GET /admin/payments HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "OPTIONS /admin/tutor/payments HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "GET /admin/tutor/payments HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "OPTIONS /admin/meetings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48208 - "GET /admin/meetings HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/uvicorn/protocols/http/httptools_impl.py", line 399, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 2177, in run_sync_in_worker_thread
+    return await future
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 859, in run
+    result = context.run(func, *args)
+  File "/root/code/product/backend/routes.py", line 1311, in get_meetings
+    meeting_responses.append(AdminMeetingResponse(
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/pydantic/main.py", line 176, in __init__
+    self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 6 validation errors for AdminMeetingResponse
+user_rating
+  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.7/v/int_type
+user_feedback
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.7/v/string_type
+tutor_rating
+  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.7/v/int_type
+tutor_feedback
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.7/v/string_type
+user_suggest
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.7/v/string_type
+tutor_suggest
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.7/v/string_type
+INFO:     127.0.0.1:48224 - "OPTIONS /admin/buypacked HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48224 - "GET /admin/buypacked HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56482 - "GET /admin/tutors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56482 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33756 - "OPTIONS /login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33756 - "POST /login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33756 - "OPTIONS /tutor/home HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33756 - "GET /tutor/home HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:33756 - "OPTIONS /CV/avatar_tutor_tutor9.jpg?timestamp=1717509507130 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33764 - "OPTIONS /CV/avatar_tutor_tutor9.jpg?timestamp=1717509507169 HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 33772) - "WebSocket /online/tutor9/tutor" [accepted]
+INFO:     connection open
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0dXRvcjkiLCJyb2xlIjoidHV0b3IiLCJ1c2VybmFtZSI6InR1dG9yOSIsImV4cCI6MTcxNzUxNDkwNn0.8TRecSeCLm7ftYp-IjvJIxcZbxKhXztNNP0O8U_xWok"}
+INFO:     127.0.0.1:33782 - "GET /CV/avatar_tutor_tutor9.jpg?timestamp=1717509507130 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33800 - "GET /CV/avatar_tutor_tutor9.jpg?timestamp=1717509507169 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33806 - "GET /CV/avatar_tutor_tutor9.jpg?timestamp=1717509512552 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45200 - "GET /tutor/home HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45200 - "OPTIONS /CV/avatar_tutor_tutor9.jpg?timestamp=1717509513215 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33806 - "GET /CV/avatar_tutor_tutor9.jpg?timestamp=1717509513215 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45200 - "OPTIONS /CV/avatar_tutor_tutor9.jpg?timestamp=1717509513920 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33806 - "GET /CV/avatar_tutor_tutor9.jpg?timestamp=1717509513920 HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 45240) - "WebSocket /ws/meeting" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:56490 - "GET /admin/tutors HTTP/1.1" 200 OK
+INFO:     connection closed
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 244, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 373, in handle
+    await self.app(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 96, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/routing.py", line 94, in app
+    await func(session)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/fastapi/routing.py", line 348, in app
+    await dependant.call(**values)
+  File "/root/code/product/backend/routes.py", line 830, in websocket_endpoint
+    data = await websocket.receive_text()
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/websockets.py", line 138, in receive_text
+    self._raise_on_disconnect(message)
+  File "/root/code/product/backend/venv/lib/python3.10/site-packages/starlette/websockets.py", line 130, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (<CloseCode.ABNORMAL_CLOSURE: 1006>, None)
+INFO:     connection closed
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2553]
+INFO:     Stopping reloader process [2550]
