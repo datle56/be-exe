@@ -75,7 +75,7 @@ from fastapi.responses import JSONResponse
 from fastapi import BackgroundTasks
 import json
 app = FastAPI()
-genai.configure(api_key='AIzaSyBlm-2HYejMg0GWY7Yv0nve9PgZgj46sPE')
+genai.configure(api_key='')
 model = genai.GenerativeModel('gemini-pro')
 #Tutor home chua sua 
 # origins = [
@@ -98,7 +98,7 @@ class CustomCORSMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
         origin = request.headers.get('origin')
-        if origin and origin.endswith(".speak.id.vn"):
+        if origin and (origin.endswith(".speak.id.vn") or origin == "http://localhost:3000"):
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
             response.headers['Access-Control-Allow-Methods'] = '*'
@@ -110,7 +110,7 @@ pwd_context  = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
-app.mount("/CV", StaticFiles(directory="CV"), name="CV")
+app.mount("/api/CV", StaticFiles(directory="CV"), name="CV")
 
 def custom_openapi():
     if app.openapi_schema:
@@ -578,16 +578,16 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
+        self.active_connections = {}
         self.online_users = 0
         self.online_tutors = 0
         self.user_queue = deque()
         self.tutor_queue = deque()
         self.matched_pairs = []
 
-    async def connect(self, websocket: WebSocket, user_id: str, user_type: str):
+    async def connect(self, websocket: WebSocket, user_id: str, user_type: str, topic: str):
         await websocket.accept()
-        self.active_connections[user_id] = {"socket": websocket, "type": user_type}
+        self.active_connections[user_id] = {"socket": websocket, "type": user_type, "topic": topic}
         if user_type == "user":
             self.online_users += 1
             self.user_queue.append(user_id)
@@ -605,40 +605,70 @@ class ConnectionManager:
         while self.user_queue and self.tutor_queue:
             user_id = self.user_queue.popleft()
             tutor_id = self.tutor_queue.popleft()
+            user_info = self.active_connections[user_id]
+            tutor_info = self.active_connections[tutor_id]
             self.matched_pairs.append({"user": user_id, "tutor": tutor_id})
-            user_socket = self.active_connections[user_id]["socket"]
-            tutor_socket = self.active_connections[tutor_id]["socket"]
-            link = 'https://ngocdat.id.vn/' + str(user_id) + '-' + str(tutor_id)
+            user_socket = user_info["socket"]
+            tutor_socket = tutor_info["socket"]
+            topic = user_info["topic"]
+            link = f'https://ngocdat.id.vn/{topic}-{user_id}'
             
             start_time = datetime.now()
             end_time = start_time + timedelta(hours=1)
 
-            #Bi nham user id voi user name
-            user_id_real = db.query(User).filter(User.username == user_id).first().id
-            tutor_id_real = db.query(Tutor).filter(Tutor.username == tutor_id).first().id
+            # Retrieve real IDs based on usernames
+            user = db.query(User).filter(User.username == user_id).first()
+            tutor = db.query(Tutor).filter(Tutor.username == tutor_id).first()
 
             new_meeting = Meeting(
                 link=link,
                 start_time=start_time,
                 end_time=end_time,
                 status='upcoming',
-                user_id=user_id_real,
-                tutor_id=tutor_id_real
+                user_id=user.id,
+                tutor_id=tutor.id,
+                topic=topic  # Thêm topic vào đây
             )
             db.add(new_meeting)
             db.commit()
 
             # Create a new review with the user_id and tutor_id
             new_review = Review(
-                user_id=user_id_real,
-                tutor_id=tutor_id_real,
+                user_id=user.id,
+                tutor_id=tutor.id,
                 meeting_id=new_meeting.id
             )
             db.add(new_review)
             db.commit()
 
+            # Decrement remaining learning sessions for user
+            package = db.query(Package).filter(Package.user_id == user.id).first()
+            if package and package.remaining_learning_sessions > 0:
+                package.remaining_learning_sessions -= 1
+                db.commit()
+            else:
+                raise AttributeError("User has no packages or no remaining learning sessions")
+
+            # Add entry to TutorEarningsHistory
+            base_earnings = 60000
+            new_earning = TutorEarningsHistory(
+                tutor_id=tutor.id,
+                date=start_time.date(),
+                session_id=new_meeting.id,
+                base_earnings=base_earnings,
+                total_earnings=base_earnings
+            )
+            db.add(new_earning)
+            db.commit()
+
+            # Update tutor's balance
+            tutor.balance += base_earnings
+            db.commit()
+
             await user_socket.send_json({"redirect_url": 'https://speak.id.vn/user/meeting'})
             await tutor_socket.send_json({"redirect_url": 'https://speak.id.vn/tutor/meeting'})
+
+        db.close()
 
 # class ConnectionManager:
 #     def __init__(self):
@@ -716,28 +746,49 @@ manager = ConnectionManager()
 @app.websocket("/api/grammar/1")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        response = model.generate_content("Bạn hãy đóng vai trò là người sửa ngữ pháp cho tôi, hãy sửa lại ngữ pháp cho tôi một cách chi tiết chỉ lỗi sai và giải thích, đồng thời có thể gợi ý các từ hoặc mẫu câu hoặc cấu trúc câu mới có thể viết lại hay hơn, hãy trả lời thân mật như là một người giáo viên, giọng điệu giống một con người đầy đủ cấu trúc sau đây là câu cần sửa: \"" + data + "\"")
-        text = response.text
-        text = markdown2.markdown(text)
-        await websocket.send_text(text)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            response = model.generate_content("Bạn hãy đóng vai trò là người sửa ngữ pháp cho tôi, hãy sửa lại ngữ pháp cho tôi một cách chi tiết chỉ lỗi sai và giải thích, đồng thời có thể gợi ý các từ hoặc mẫu câu hoặc cấu trúc câu mới có thể viết lại hay hơn, hãy trả lời thân mật như là một người giáo viên, giọng điệu giống một con người đầy đủ cấu trúc sau đây là câu cần sửa: \"" + data + "\"")
+            text = response.text
+            text = markdown2.markdown(text)
+            await websocket.send_text(text)
+    except WebSocketDisconnect:
+        pass
 
 @app.websocket("/api/grammar/2")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        response = model.generate_content("Hãy sửa ngữ pháp câu này cho tôi thành câu đúng, chỉ cần đưa đáp án không cần giải thích: ,  \"" + data + "\"")
-        text = response.text
-        text = markdown2.markdown(text)
-        await websocket.send_text(text)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            response = model.generate_content("Hãy sửa ngữ pháp câu này cho tôi thành câu đúng, chỉ cần đưa đáp án không cần giải thích: ,  \"" + data + "\"")
+            text = response.text
+            text = markdown2.markdown(text)
+            await websocket.send_text(text)
+    except WebSocketDisconnect:
+        pass
 
 
+# Backup dung ngay 6/8
+# @app.websocket("/api/ws/{user_id}/{user_type}")
+# async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str, background_tasks: BackgroundTasks):
+#     await manager.connect(websocket, user_id, user_type)
+#     try:
+#         while True:
+#             data = await websocket.receive_text()
+#             if data == "ping":
+#                 if manager.online_users > 0 and manager.online_tutors > 0:
+#                     background_tasks.add_task(manager.match_users, background_tasks)
+#                 await websocket.send_json({"users": manager.online_users, "user_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "user"],
+#                                            "tutors": manager.online_tutors, "tutor_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "tutor"],
+#                                            "matched_pairs": manager.matched_pairs})
+#     except WebSocketDisconnect:
+#         manager.disconnect(user_id)
 
-@app.websocket("/api/ws/{user_id}/{user_type}")
-async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str, background_tasks: BackgroundTasks):
-    await manager.connect(websocket, user_id, user_type)
+@app.websocket("/api/ws/{user_id}/{user_type}/{topic}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str, topic: str, background_tasks: BackgroundTasks):
+    await manager.connect(websocket, user_id, user_type, topic)
     try:
         while True:
             data = await websocket.receive_text()
@@ -749,8 +800,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str,
                                            "matched_pairs": manager.matched_pairs})
     except WebSocketDisconnect:
         manager.disconnect(user_id)
-
-
 
 class UserStatusManager:
     def __init__(self):
@@ -799,7 +848,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str)
     try:
         while True:
             data = await websocket.receive_text()
-            print(data)
             # Xử lý dữ liệu nhận được từ websocket tại đây
     except WebSocketDisconnect:
         await online.disconnect(user_id)
@@ -840,55 +888,59 @@ async def read_home(current_user: User = Depends(get_current_user)):
 async def websocket_endpoint(websocket: WebSocket):
     db: Session = next(get_db())
     await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        data = json.loads(data)
-        role = data.get('role')
-        username = data.get('username')
+    try:
+        while True:
+            data = await websocket.receive_text()
+            data = json.loads(data)
+            role = data.get('role')
+            username = data.get('username')
 
-        if role == 'user':
-            user = db.query(User).filter(User.username == username).first()
-            if user:
-                meeting = db.query(Meeting).filter(Meeting.user_id == user.id).order_by(desc(Meeting.end_time)).first()
-                if meeting:
-                    remaining_minutes = (meeting.end_time - datetime.now()).total_seconds() / 60
-                    if remaining_minutes < 0:
+            if role == 'user':
+                user = db.query(User).filter(User.username == username).first()
+                if user:
+                    meeting = db.query(Meeting).filter(Meeting.user_id == user.id).order_by(desc(Meeting.end_time)).first()
+                    if meeting:
+                        remaining_minutes = (meeting.end_time - datetime.now()).total_seconds() / 60
+                        if remaining_minutes < 0:
+                            await websocket.send_json({
+                                "message": "Bạn không có buổi học nào hiện tại."
+                            })
+                        else:
+                            await websocket.send_json({
+                                "link": meeting.link,
+                                "status": meeting.status,
+                                "remaining_minutes": remaining_minutes
+                            })
+                    else:
                         await websocket.send_json({
                             "message": "Bạn không có buổi học nào hiện tại."
                         })
-                    else:
-                        await websocket.send_json({
-                            "link": meeting.link,
-                            "status": meeting.status,
-                            "remaining_minutes": remaining_minutes
-                        })
-                else:
-                    await websocket.send_json({
-                        "message": "Bạn không có buổi học nào hiện tại."
-                    })
 
-        elif role == 'tutor':
-            tutor = db.query(Tutor).filter(Tutor.username == username).first()
-            if tutor:
-                meeting = db.query(Meeting).filter(Meeting.tutor_id == tutor.id, Meeting.status == 'upcoming').first()
-                if meeting:
-                    remaining_minutes = (meeting.end_time - datetime.now()).total_seconds() / 60
-                    if remaining_minutes < 0:
-                        meeting.status = 'completed'
-                        db.commit()
-                        await websocket.send_json({
-                            "message": "Cuộc họp đã kết thúc."
-                        })
+            elif role == 'tutor':
+                tutor = db.query(Tutor).filter(Tutor.username == username).first()
+                if tutor:
+                    meeting = db.query(Meeting).filter(Meeting.tutor_id == tutor.id, Meeting.status == 'upcoming').first()
+                    if meeting:
+                        remaining_minutes = (meeting.end_time - datetime.now()).total_seconds() / 60
+                        if remaining_minutes < 0:
+                            meeting.status = 'completed'
+                            db.commit()
+                            await websocket.send_json({
+                                "message": "Cuộc họp đã kết thúc."
+                            })
+                        else:
+                            await websocket.send_json({
+                                "link": meeting.link,
+                                "status": meeting.status,
+                                "remaining_minutes": remaining_minutes
+                            })
                     else:
                         await websocket.send_json({
-                            "link": meeting.link,
-                            "status": meeting.status,
-                            "remaining_minutes": remaining_minutes
+                            "message": "Bạn không có buổi học nào hiện tại."
                         })
-                else:
-                    await websocket.send_json({
-                        "message": "Bạn không có buổi học nào hiện tại."
-                    })
+    except WebSocketDisconnect as e:
+        # Handle disconnection
+        print("WebSocket disconnected:", e)
 # Pydantic Model for Response
 class MeetingResponse(BaseModel):
     id: int
@@ -900,6 +952,7 @@ class MeetingResponse(BaseModel):
     tutor_rating: Optional[int]
     tutor_name: str  # Thêm trường tutor_name
     reviewed: bool  # Thêm trường reviewed
+    topic : str
 
     class Config:
         orm_mode = True
@@ -915,6 +968,7 @@ class UserMeetingResponse(BaseModel):
     tutor_rating: Optional[int]
     tutor_name: str  # Thêm trường tutor_name
     reviewed: bool  # Thêm trường reviewed
+    topic : str
 
     class Config:
         orm_mode = True
@@ -938,43 +992,45 @@ class UserMeetingResponse(BaseModel):
 #     ]
     
 #     return meeting_responses
-@app.get("/user/meetings")
-def get_meetings(current_user: User = Depends(get_current_user)):
-    db = next(get_db())
-    user_in_db = db.query(User).filter(User.username == current_user.username).first()
-    meetings = db.query(Meeting).join(Tutor, Meeting.tutor_id == Tutor.id).filter(Meeting.user_id == user_in_db.id).all()
+
+
+# @app.get("/api/user/meetings")
+# def get_meetings(current_user: User = Depends(get_current_user)):
+#     db = next(get_db())
+#     user_in_db = db.query(User).filter(User.username == current_user.username).first()
+#     meetings = db.query(Meeting).join(Tutor, Meeting.tutor_id == Tutor.id).filter(Meeting.user_id == user_in_db.id).all()
     
-    meeting_responses = []
-    for meeting in meetings:
-        review = db.query(Review).filter(Review.meeting_id == meeting.id).first()
-        if review:
-            meeting_responses.append(UserMeetingResponse(
-                id=meeting.id,
-                start_time=meeting.start_time.isoformat(),
-                tutor_name=meeting.tutor.username,
-                user_feedback=review.user_feedback,
-                user_rating=review.user_rating,
-                tutor_feedback=review.tutor_feedback,
-                tutor_rating=review.tutor_rating,
-                user_suggest=review.user_suggest,  # Add this line
-                tutor_suggest=review.tutor_suggest,  # Add this line
-                reviewed=review.user_reviewed
-            ))
-        else:
-            meeting_responses.append(UserMeetingResponse(
-                id=meeting.id,
-                start_time=meeting.start_time,
-                tutor_name=meeting.tutor.username,
-                user_feedback=None,
-                user_rating=None,
-                tutor_feedback=None,
-                tutor_rating=None,
-                user_suggest=None,  # Add this line
-                tutor_suggest=None,  # Add this line
-                reviewed=False
-            ))
-    db.commit()
-    return meeting_responses
+#     meeting_responses = []
+#     for meeting in meetings:
+#         review = db.query(Review).filter(Review.meeting_id == meeting.id).first()
+#         if review:
+#             meeting_responses.append(UserMeetingResponse(
+#                 id=meeting.id,
+#                 start_time=meeting.start_time.isoformat(),
+#                 tutor_name=meeting.tutor.username,
+#                 user_feedback=review.user_feedback,
+#                 user_rating=review.user_rating,
+#                 tutor_feedback=review.tutor_feedback,
+#                 tutor_rating=review.tutor_rating,
+#                 user_suggest=review.user_suggest,  # Add this line
+#                 tutor_suggest=review.tutor_suggest,  # Add this line
+#                 reviewed=review.user_reviewed
+#             ))
+#         else:
+#             meeting_responses.append(UserMeetingResponse(
+#                 id=meeting.id,
+#                 start_time=meeting.start_time,
+#                 tutor_name=meeting.tutor.username,
+#                 user_feedback=None,
+#                 user_rating=None,
+#                 tutor_feedback=None,
+#                 tutor_rating=None,
+#                 user_suggest=None,  # Add this line
+#                 tutor_suggest=None,  # Add this line
+#                 reviewed=False
+#             ))
+#     db.commit()
+#     return meeting_responses
 
 class ReviewCreate(BaseModel):
     user_rating: Optional[int] = None
@@ -1043,8 +1099,10 @@ def get_meetings(current_user: User = Depends(get_current_user)):
                 "tutor_feedback": review.tutor_feedback,
                 "tutor_rating": review.tutor_rating,
                 "tutor_name": tutor_in_db.username,  # Lấy tên tutor
-                "reviewed": review.user_reviewed and review.tutor_reviewed  # Xác định đã được review hay chưa
+                "reviewed": review.user_reviewed and review.tutor_reviewed,  # Xác định đã được review hay chưa
+                "topic" : meeting.topic
             })
+    print(meetings_with_reviews)
     return meetings_with_reviews
 
 @app.put("/api/tutor/review")
@@ -1196,43 +1254,27 @@ async def upload_avatar(file: UploadFile = File(...), role: str = Form(...), use
         buffer.write(await file.read())
 
     # Generate a URL with a timestamp
-    avatar_url = f"http://localhost:8000/CV/{avatar_filename}?timestamp={int(time.time())}"
+    avatar_url = f"https://speak.id.vn/api/CV/{avatar_filename}?timestamp={int(time.time())}"
     return {"avatar_url": avatar_url}
 
 
 
 @app.post("/api/buy-packed")
-async def buy_packed(packed: str, current_user: User = Depends(get_current_user)):
+async def buy_packed(package_id: int, current_user: User = Depends(get_current_user)):
     db = next(get_db())
+
+    # Kiểm tra xem package_id có hợp lệ không
+    if package_id not in [1, 2, 3, 4]:
+        return {"message": "Gói không hợp lệ"}
+
+    # Lấy thông tin người dùng từ cơ sở dữ liệu
     user = db.query(User).filter(User.username == current_user.username).first()
-    package = db.query(Package).filter(Package.user_id == user.id).first()
 
-    # Định nghĩa giá của các gói
-    package_prices = {
-        "1": 95000,
-        "2": 950000,
-        "3": 5000,
-        "4": 50000
-    }
+    # Tạo thông tin mua gói mới
+    buy_package = BuyPacked(user_id=user.id, package_id=package_id, status='waiting')
 
-    # Kiểm tra số dư của người dùng so với giá của gói mà họ muốn mua
-    if user.balance < package_prices[packed]:
-        return {"message": "Số dư không đủ"}
-
-    # Lưu thông tin mua gói
-    buy_packed = BuyPacked(user_id=user.id, package_id=packed, balance_before_purchase=user.balance, balance_after_purchase=user.balance - package_prices[packed])
-    db.add(buy_packed)
-
-    # Trừ tiền trong tài khoản người dùng
-    user.balance -= package_prices[packed]
-
-    # Cập nhật số buổi học hoặc cuộc trò chuyện AI tương ứng với gói đã mua
-    if packed in ["1", "2"]:
-        package.remaining_learning_sessions += 1 if packed == "1" else 11
-    else:
-        package.remaining_ai_conversations += 1 if packed == "3" else 12
-
-    # Cập nhật gói trong cơ sở dữ liệu
+    # Thêm thông tin mua gói vào cơ sở dữ liệu
+    db.add(buy_package)
     db.commit()
 
     return {"message": "Đã mua thành công"}
@@ -1240,10 +1282,24 @@ async def buy_packed(packed: str, current_user: User = Depends(get_current_user)
 
 
 @app.get("/api/admin/buypacked")
-async def get_buy_packed_history():
+async def get_buy_packed_history(): 
     db = next(get_db())
     buy_packed_history = db.query(BuyPacked, User.username).join(User, User.id == BuyPacked.user_id).all()
-    return [{"id": history.BuyPacked.id, "username": history.username, "package_id": history.BuyPacked.package_id, "balance_before_purchase": history.BuyPacked.balance_before_purchase, "balance_after_purchase": history.BuyPacked.balance_after_purchase, "purchase_date": history.BuyPacked.purchase_date} for history in buy_packed_history]
+
+    # Tạo một danh sách để lưu trữ thông tin lịch sử mua gói
+    result = []
+
+    # Lặp qua mỗi bản ghi trong buy_packed_history và tạo tuple chứa thông tin cần thiết
+    for buy_packed, username in buy_packed_history:
+        result.append({
+            "id": buy_packed.id,
+            "username": username,
+            "package_id": buy_packed.package_id,
+            "purchase_date": buy_packed.purchase_date,
+            "status": buy_packed.status
+        })
+
+    return result
 
 # @app.post("/user/review")
 # def create_review(review: UserReviewCreate, current_user: User = Depends(get_current_user)):
@@ -1275,7 +1331,6 @@ async def get_buy_packed_history():
 
 
 
-
 @app.get("/api/user/meetings")
 def get_meetings(current_user: User = Depends(get_current_user)):
     db = next(get_db())
@@ -1286,9 +1341,9 @@ def get_meetings(current_user: User = Depends(get_current_user)):
     for meeting in meetings:
         review = db.query(Review).filter(Review.meeting_id == meeting.id).first()
         if review:
-            meeting_responses.append(MeetingResponse(
+            meeting_responses.append(UserMeetingResponse(
                 id=meeting.id,
-                start_time=meeting.start_time,
+                start_time=meeting.start_time.isoformat(),
                 tutor_name=meeting.tutor.username,
                 user_feedback=review.user_feedback,
                 user_rating=review.user_rating,
@@ -1296,10 +1351,11 @@ def get_meetings(current_user: User = Depends(get_current_user)):
                 tutor_rating=review.tutor_rating,
                 user_suggest=review.user_suggest,  # Add this line
                 tutor_suggest=review.tutor_suggest,  # Add this line
-                reviewed=review.user_reviewed
+                reviewed=review.user_reviewed,
+                topic = meeting.topic
             ))
         else:
-            meeting_responses.append(MeetingResponse(
+            meeting_responses.append(UserMeetingResponse(
                 id=meeting.id,
                 start_time=meeting.start_time,
                 tutor_name=meeting.tutor.username,
@@ -1309,10 +1365,13 @@ def get_meetings(current_user: User = Depends(get_current_user)):
                 tutor_rating=None,
                 user_suggest=None,  # Add this line
                 tutor_suggest=None,  # Add this line
-                reviewed=False
+                reviewed=False,
+                topic = meeting.topic
             ))
     db.commit()
+    print(meeting_responses)
     return meeting_responses
+
 
 @app.get("/api/admin/meetings", response_model=List[AdminMeetingResponse])
 def get_meetings(db: Session = Depends(get_db)):
@@ -1530,7 +1589,7 @@ class CheckPacked(BaseModel):
     payment_id: int
     status: str
 
-@app.put("/admin/buypacked/{payment_id}")
+@app.put("/api/admin/buypacked/{payment_id}")
 async def update_payment_status(payment_id: int, check_packed: CheckPacked):
     db = next(get_db())
     payment = db.query(BuyPacked).filter(BuyPacked.id == payment_id).first()
@@ -1558,7 +1617,7 @@ async def update_payment_status(payment_id: int, check_packed: CheckPacked):
     return {"message": "Payment status updated successfully"}
 
 
-@app.get("/user/buypacked")
+@app.get("/api/user/buypacked")
 async def get_buypacked(user: User = Depends(get_current_user)):
     db = next(get_db())
     username = user.username
@@ -1572,7 +1631,7 @@ async def get_buypacked(user: User = Depends(get_current_user)):
     return {"buypacked": [packed.__dict__ for packed in buypacked]}
 
 
-@app.get("/admin/buypacked")
+@app.get("/api/admin/buypacked")
 async def get_buy_packed_history(): 
     db = next(get_db())
     buy_packed_history = db.query(BuyPacked, User.username).join(User, User.id == BuyPacked.user_id).all()
@@ -1593,7 +1652,7 @@ async def get_buy_packed_history():
     return result
 
 
-@app.get("/admin/meetings", response_model=List[AdminMeetingResponse])
+@app.get("/api/admin/meetings", response_model=List[AdminMeetingResponse])
 def get_meetings():
     db = next(get_db())
     meetings = db.query(Meeting).all()

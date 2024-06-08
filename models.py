@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey,Text,Boolean, DateTime, Date, Time
+from sqlalchemy import Column, Integer, String, ForeignKey,Text,Boolean, DateTime, Date, Time,Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timedelta
@@ -21,6 +21,8 @@ class User(Base):
     online_status = Column(Enum('online', 'offline'), default='offline')
     last_login = Column(DateTime(timezone=True), default=func.now())
 
+    
+
 class Package(Base):
     __tablename__ = "packages"
 
@@ -30,7 +32,6 @@ class Package(Base):
     remaining_ai_conversations = Column(Integer, default=0)
     purchase_date = Column(DateTime(timezone=True), default=func.now())
 
-
 class Tutor(Base):
     __tablename__ = "tutors"
 
@@ -39,10 +40,17 @@ class Tutor(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     balance = Column(Integer, default=0)
-    status = Column(Enum('waiting', 'accept', 'decline'))
+    status = Column(Enum('waiting', 'accept', 'decline'), default = 'waiting')
 
     online_status = Column(Enum('online', 'offline'), default='offline')
     last_login = Column(DateTime(timezone=True), default=func.now())
+    earnings_history = relationship("TutorEarningsHistory", back_populates="tutor")
+
+
+
+
+
+
 
 class DailyTeachingTime(Base):
     __tablename__ = "daily_teaching_times"
@@ -186,6 +194,25 @@ class Meeting(Base):
     status = Column(Enum('upcoming', 'ongoing', 'completed'))
     user_id = Column(Integer, ForeignKey('users.id'))
     tutor_id = Column(Integer, ForeignKey('tutors.id'))
-    tutor = relationship("Tutor")  # Add this line
-    user = relationship("User")  # Add this line
+    topic = Column(String)  # Thêm cột này
+    tutor = relationship("Tutor")
+    user = relationship("User")
     reviews = relationship("Review", back_populates="meeting")
+    earnings_history = relationship("TutorEarningsHistory", back_populates="session")
+
+
+class TutorEarningsHistory(Base):
+    __tablename__ = "tutor_earnings_history"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    tutor_id = Column(Integer, ForeignKey('tutors.id'))
+    date = Column(Date, default=func.current_date())
+    session_id = Column(Integer, ForeignKey('meetings.id'), nullable=True)
+    base_earnings = Column(Float, default=0.0)
+    bonus = Column(Float, default=0.0)
+    bonus_type = Column(String, nullable=True)  # Add this column to record the type of bonus
+    total_earnings = Column(Float, default=0.0)
+
+    tutor = relationship("Tutor", back_populates="earnings_history")
+    session = relationship("Meeting", back_populates="earnings_history")
+

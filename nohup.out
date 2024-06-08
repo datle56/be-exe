@@ -1,0 +1,365 @@
+INFO:     Will watch for changes in these directories: ['/root/code/product/be-exe']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [13723] using WatchFiles
+/root/miniconda3/envs/web/lib/python3.11/site-packages/pydantic/_internal/_config.py:334: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+/root/miniconda3/envs/web/lib/python3.11/site-packages/pydantic/_internal/_config.py:334: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [13856]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     162.158.90.211:0 - "POST /api/register HTTP/1.0" 200 OK
+INFO:     162.158.90.211:0 - "POST /api/login HTTP/1.0" 400 Bad Request
+INFO:     162.158.90.211:0 - "POST /api/login HTTP/1.0" 400 Bad Request
+INFO:     162.158.90.211:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0d64bd0>
+INFO:     162.158.90.211:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.210.77:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833405685 HTTP/1.0" 404 Not Found
+INFO:     162.158.187.7:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833405739 HTTP/1.0" 404 Not Found
+INFO:     162.158.187.42:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833406082 HTTP/1.0" 404 Not Found
+INFO:     172.70.211.224:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833407900 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0d74e90>
+INFO:     172.69.33.158:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.210.130:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833504974 HTTP/1.0" 404 Not Found
+INFO:     172.70.210.26:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833505430 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0d80c90>
+INFO:     162.158.91.74:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.69.34.96:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833554045 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.11:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833554499 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0d8c510>
+INFO:     172.69.34.32:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.69.34.133:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833601641 HTTP/1.0" 404 Not Found
+INFO:     172.69.33.246:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833602069 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0d75990>
+INFO:     172.70.211.64:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.91.25:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833795496 HTTP/1.0" 404 Not Found
+INFO:     172.70.210.11:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833795543 HTTP/1.0" 404 Not Found
+INFO:     172.70.214.231:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833795914 HTTP/1.0" 404 Not Found
+INFO:     172.70.211.122:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833797088 HTTP/1.0" 404 Not Found
+INFO:     162.158.187.71:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833836095 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.199:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717833838561 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0d8dd50>
+INFO:     172.70.211.234:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.211.127:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834162518 HTTP/1.0" 404 Not Found
+INFO:     172.69.33.120:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834162978 HTTP/1.0" 404 Not Found
+INFO:     172.68.225.107:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0d8e8d0>
+INFO:     172.68.225.107:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.68.225.247:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717834183155 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.3:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.219.79:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717834183365 HTTP/1.0" 404 Not Found
+INFO:     172.70.211.234:0 - "POST /api/login HTTP/1.0" 200 OK
+INFO:     172.68.225.89:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717834183431 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0d76c50>
+INFO:     172.70.211.234:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.186.123:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834183852 HTTP/1.0" 404 Not Found
+INFO:     172.69.34.133:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834183829 HTTP/1.0" 404 Not Found
+INFO:     162.158.187.32:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834184252 HTTP/1.0" 404 Not Found
+INFO:     162.158.187.40:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834184916 HTTP/1.0" 404 Not Found
+INFO:     172.68.225.149:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717834187754 HTTP/1.0" 404 Not Found
+INFO:     172.71.219.35:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717834192534 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/grammar/1" [accepted]
+INFO:     connection open
+INFO:     172.68.225.237:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717834224503 HTTP/1.0" 404 Not Found
+INFO:     connection closed
+<models.User object at 0x7f0ca0db3950>
+INFO:     172.70.214.233:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.187.83:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834243348 HTTP/1.0" 404 Not Found
+INFO:     172.69.33.246:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834243808 HTTP/1.0" 404 Not Found
+INFO:     172.70.210.190:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0dbe650>
+INFO:     172.70.210.190:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.186.100:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834381284 HTTP/1.0" 404 Not Found
+INFO:     162.158.90.10:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834381331 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.36:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834381697 HTTP/1.0" 404 Not Found
+INFO:     162.158.187.36:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834382483 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.199:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0d94f90>
+INFO:     162.158.186.199:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.186.151:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834458442 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.210:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834458478 HTTP/1.0" 404 Not Found
+INFO:     172.70.211.4:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834458485 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.127:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834458861 HTTP/1.0" 404 Not Found
+INFO:     172.70.214.75:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834466726 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0dc52d0>
+INFO:     162.158.186.199:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.187.37:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834478538 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.210:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834478955 HTTP/1.0" 404 Not Found
+INFO:     172.69.34.138:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0dd1d50>
+INFO:     172.69.34.138:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.186.147:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834664634 HTTP/1.0" 404 Not Found
+INFO:     172.69.33.237:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834664656 HTTP/1.0" 404 Not Found
+INFO:     162.158.91.39:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834664669 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.183:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834665068 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.212:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834666811 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0dbc650>
+INFO:     172.69.34.68:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.206.165:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834850343 HTTP/1.0" 404 Not Found
+INFO:     162.158.91.41:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717834850759 HTTP/1.0" 404 Not Found
+<models.User object at 0x7f0ca0dbea50>
+INFO:     162.158.178.112:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.210.191:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0dd18d0>
+INFO:     172.70.210.191:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.214.198:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835176406 HTTP/1.0" 404 Not Found
+INFO:     172.70.210.236:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835176434 HTTP/1.0" 404 Not Found
+INFO:     172.70.214.249:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835176821 HTTP/1.0" 404 Not Found
+INFO:     172.70.210.61:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835177417 HTTP/1.0" 404 Not Found
+INFO:     172.70.214.92:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0db27d0>
+INFO:     172.70.214.92:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     162.158.91.68:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835253451 HTTP/1.0" 404 Not Found
+INFO:     172.70.210.189:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835253478 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.114:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835253472 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.16:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835253852 HTTP/1.0" 404 Not Found
+INFO:     172.70.206.200:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835255110 HTTP/1.0" 404 Not Found
+INFO:     172.70.211.219:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0dbcf10>
+INFO:     172.70.211.219:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.70.210.132:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835385815 HTTP/1.0" 404 Not Found
+INFO:     172.70.214.89:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835385797 HTTP/1.0" 404 Not Found
+INFO:     172.70.207.146:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835385822 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.245:0 - "GET /api/CV/avatar_user_hello.jpg?timestamp=1717835387150 HTTP/1.0" 404 Not Found
+INFO:     172.69.34.31:0 - "POST /api/register HTTP/1.0" 200 OK
+INFO:     172.69.34.31:0 - "POST /api/login HTTP/1.0" 200 OK
+INFO:     172.69.34.31:0 - "GET /api/tutor/home HTTP/1.0" 404 Not Found
+INFO:     162.158.186.148:0 - "GET /api/CV/avatar_tutor_hello1.jpg?timestamp=1717835988231 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.52:0 - "GET /api/CV/avatar_tutor_hello1.jpg?timestamp=1717835988252 HTTP/1.0" 404 Not Found
+INFO:     162.158.186.84:0 - "GET /api/CV/avatar_tutor_hello1.jpg?timestamp=1717835988260 HTTP/1.0" 404 Not Found
+INFO:     172.69.33.172:0 - "GET /api/CV/avatar_tutor_hello1.jpg?timestamp=1717836039502 HTTP/1.0" 404 Not Found
+INFO:     172.71.211.19:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0d75d50>
+INFO:     172.71.211.19:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.71.210.17:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850091490 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.97:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850091510 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.109:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850091516 HTTP/1.0" 404 Not Found
+INFO:     172.71.214.225:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     162.158.114.205:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850091584 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.125:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850094722 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.97:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850097137 HTTP/1.0" 404 Not Found
+INFO:     172.71.211.19:0 - "GET /api/get-profile/user HTTP/1.0" 200 OK
+INFO:     172.71.210.18:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850105177 HTTP/1.0" 404 Not Found
+INFO:     162.158.114.166:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850105761 HTTP/1.0" 404 Not Found
+INFO:     172.71.211.19:0 - "GET /api/user/meetings HTTP/1.0" 200 OK
+INFO:     162.158.114.54:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850106450 HTTP/1.0" 404 Not Found
+INFO:     172.71.211.19:0 - "GET /api/user/buypacked HTTP/1.0" 200 OK
+INFO:     172.71.210.142:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717850107114 HTTP/1.0" 404 Not Found
+INFO:     162.158.114.176:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     162.158.114.233:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.218.129:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.218.163:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.214.243:0 - "POST /api/login HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca0dee310>
+INFO:     172.71.214.243:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.71.214.145:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857408234 HTTP/1.0" 404 Not Found
+INFO:     172.71.215.86:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857408258 HTTP/1.0" 404 Not Found
+INFO:     172.71.215.78:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857408254 HTTP/1.0" 404 Not Found
+INFO:     172.71.214.248:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857408322 HTTP/1.0" 404 Not Found
+INFO:     172.71.218.211:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.211.54:0 - "POST /api/register HTTP/1.0" 200 OK
+INFO:     172.71.211.54:0 - "POST /api/login HTTP/1.0" 200 OK
+INFO:     172.71.211.54:0 - "GET /api/tutor/home HTTP/1.0" 404 Not Found
+INFO:     172.71.210.145:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857468304 HTTP/1.0" 404 Not Found
+INFO:     162.158.114.162:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857468327 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.164:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857468321 HTTP/1.0" 404 Not Found
+INFO:     172.71.210.95:0 - "GET /api/online/tutor9/tutor HTTP/1.0" 404 Not Found
+INFO:     172.71.210.253:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857469437 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/tutor9/tutor/" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/tutor9/tutor/SELF-INTRODUCE" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/tutor9/tutor/SELF-INTRODUCE" [accepted]
+INFO:     connection open
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/tutor9/tutor/WEATHER" [accepted]
+INFO:     connection open
+Online users: 0, online tutors: 1
+Matching users...
+User Queue: deque([])
+Tutor Queue: deque(['tutor9'])
+Online users: 0, online tutors: 1
+Matching users...
+User Queue: deque([])
+Tutor Queue: deque(['tutor9'])
+Online users: 0, online tutors: 2
+Matching users...
+User Queue: deque([])
+Tutor Queue: deque(['tutor9', 'tutor9'])
+INFO:     172.71.214.133:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857510138 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/dat/user/" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/dat/user/SELF-INTRODUCE" [accepted]
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 240, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 69, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/middleware/errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/middleware/base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 373, in handle
+    await self.app(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 96, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 94, in app
+    await func(session)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/fastapi/routing.py", line 348, in app
+    await dependant.call(**values)
+  File "/root/code/product/be-exe/routes.py", line 791, in websocket_endpoint
+    await manager.connect(websocket, user_id, user_type, topic)
+  File "/root/code/product/be-exe/routes.py", line 598, in connect
+    await self.match_users()
+  File "/root/code/product/be-exe/routes.py", line 650, in match_users
+    raise AttributeError("User has no packages or no remaining learning sessions")
+AttributeError: User has no packages or no remaining learning sessions
+INFO:     connection open
+INFO:     connection closed
+INFO:     connection closed
+Online users: 1, online tutors: 2
+Matching users...
+User Queue: deque(['dat'])
+Tutor Queue: deque(['tutor9', 'tutor9'])
+INFO:     162.158.114.197:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857536369 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/meeting" [accepted]
+INFO:     connection open
+INFO:     connection closed
+WebSocket disconnected: (<CloseCode.NO_STATUS_RCVD: 1005>, None)
+INFO:     172.71.210.26:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857542124 HTTP/1.0" 404 Not Found
+INFO:     127.0.0.1:48950 - "OPTIONS /tutor/home HTTP/1.1" 404 Not Found
+INFO:     172.71.214.181:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857559589 HTTP/1.0" 404 Not Found
+INFO:     172.71.214.63:0 - "POST /api/buy-packed?package_id=1 HTTP/1.0" 200 OK
+<models.User object at 0x7f0ca03381d0>
+INFO:     172.71.214.63:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.71.214.63:0 - "GET /api/user/buypacked HTTP/1.0" 200 OK
+INFO:     172.71.214.191:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857562832 HTTP/1.0" 404 Not Found
+INFO:     172.71.215.84:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857562918 HTTP/1.0" 404 Not Found
+INFO:     172.71.218.245:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.215.14:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.214.63:0 - "GET /api/admin/buypacked HTTP/1.0" 200 OK
+INFO:     172.71.214.63:0 - "PUT /api/admin/buypacked/1 HTTP/1.0" 200 OK
+INFO:     172.71.214.63:0 - "GET /api/admin/buypacked HTTP/1.0" 200 OK
+INFO:     172.71.214.129:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857579625 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/dat/user/" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/dat/user/SELF-INTRODUCE" [accepted]
+INFO:     connection open
+Online users: 2, online tutors: 1
+Matching users...
+User Queue: deque(['dat'])
+Tutor Queue: deque([])
+INFO:     172.71.218.72:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857583141 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/tutor9/tutor/" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/tutor9/tutor/SELF-INTRODUCE" [accepted]
+INFO:     connection open
+INFO:     connection closed
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/root/code/product/be-exe/routes.py", line 794, in websocket_endpoint
+    data = await websocket.receive_text()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/websockets.py", line 138, in receive_text
+    self._raise_on_disconnect(message)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/websockets.py", line 130, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1001, None)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 240, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 69, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/middleware/errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/middleware/base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 373, in handle
+    await self.app(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 96, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/starlette/routing.py", line 94, in app
+    await func(session)
+  File "/root/miniconda3/envs/web/lib/python3.11/site-packages/fastapi/routing.py", line 348, in app
+    await dependant.call(**values)
+  File "/root/code/product/be-exe/routes.py", line 802, in websocket_endpoint
+    manager.disconnect(user_id)
+  File "/root/code/product/be-exe/routes.py", line 731, in disconnect
+    user_type = self.active_connections[user_id]["type"]
+                ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'tutor9'
+INFO:     connection closed
+INFO:     connection closed
+Online users: 2, online tutors: 2
+Matching users...
+User Queue: deque(['dat'])
+Tutor Queue: deque(['tutor9'])
+<models.User object at 0x7f0ca034ccd0>
+INFO:     172.71.214.63:0 - "GET /api/user/home HTTP/1.0" 200 OK
+INFO:     172.71.215.84:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857585829 HTTP/1.0" 404 Not Found
+INFO:     172.71.214.209:0 - "GET /api/CV/avatar_user_dat.jpg?timestamp=1717857586255 HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/meeting" [accepted]
+INFO:     connection open
+INFO:     172.71.219.52:0 - "GET /api/online/dat/user HTTP/1.0" 404 Not Found
+INFO:     172.71.210.7:0 - "GET /api/tutor/home HTTP/1.0" 404 Not Found
+INFO:     162.158.114.176:0 - "GET /api/CV/avatar_tutor_tutor9.jpg?timestamp=1717857597627 HTTP/1.0" 404 Not Found
+INFO:     172.71.219.94:0 - "GET /api/online/tutor9/tutor HTTP/1.0" 404 Not Found
+INFO:     ('42.119.149.82', 0) - "WebSocket /api/ws/meeting" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13856]
+INFO:     Stopping reloader process [13723]
