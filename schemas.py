@@ -37,3 +37,15 @@ class AdminMeetingResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class EarningsHistory(BaseModel):
+    id: int
+    date: datetime
+    username: str
+    topic: str
+    base_earnings: int
+    bonus_type: str
+
+    class Config:
+        orm_mode = True

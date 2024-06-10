@@ -395,7 +395,7 @@ async def update_payment_status(payment_id: int, status: str):
     return {"message": "Cập nhật trạng thái thanh toán thành công"}
 
 
-@app.post("/tutor/withdraw")
+@app.post("/api/tutor/withdraw")
 async def create_withdrawal(payment: PaymentIn, tutor: Tutor = Depends(get_current_user)):
     db = next(get_db())
     username = tutor.username
@@ -576,6 +576,46 @@ async def get_cv_history(tutor: Tutor = Depends(get_current_user)):
 SECRET_KEY = "123"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+@app.websocket("/api/ws/user/{user_id}/{topic}")
+async def user_websocket_endpoint(websocket: WebSocket, user_id: str, topic: str, background_tasks: BackgroundTasks):
+    await manager.connect(websocket, user_id, "user", topic)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            if data == "ping":
+                if manager.online_users > 0 and manager.online_tutors > 0:
+                    background_tasks.add_task(manager.match_users)
+                await websocket.send_json({
+                    "users": manager.online_users,
+                    "user_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "user"],
+                    "tutors": manager.online_tutors,
+                    "tutor_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "tutor"],
+                    "matched_pairs": manager.matched_pairs
+                })
+    except WebSocketDisconnect:
+        manager.disconnect(user_id)
+
+# WebSocket endpoint for tutors without a topic
+@app.websocket("/api/ws/tutor/{tutor_id}")
+async def tutor_websocket_endpoint(websocket: WebSocket, tutor_id: str, background_tasks: BackgroundTasks):
+    await manager.connect(websocket, tutor_id, "tutor", None)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            if data == "ping":
+                if manager.online_users > 0 and manager.online_tutors > 0:
+                    background_tasks.add_task(manager.match_users)
+                await websocket.send_json({
+                    "users": manager.online_users,
+                    "user_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "user"],
+                    "tutors": manager.online_tutors,
+                    "tutor_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "tutor"],
+                    "matched_pairs": manager.matched_pairs
+                })
+    except WebSocketDisconnect:
+        manager.disconnect(tutor_id)
+
+# Connection Manager
 class ConnectionManager:
     def __init__(self):
         self.active_connections = {}
@@ -594,153 +634,101 @@ class ConnectionManager:
         elif user_type == "tutor":
             self.online_tutors += 1
             self.tutor_queue.append(user_id)
-        print(f"Online users: {self.online_users}, online tutors: {self.online_tutors}")  # Print the number of online users and tutors
+        print(f"Online users: {self.online_users}, online tutors: {self.online_tutors}")
         await self.match_users()
+
+    def disconnect(self, user_id: str):
+        user_info = self.active_connections.pop(user_id, None)
+        if user_info:
+            user_type = user_info["type"]
+            if user_type == "user":
+                self.online_users -= 1
+                if user_id in self.user_queue:
+                    self.user_queue.remove(user_id)
+            elif user_type == "tutor":
+                self.online_tutors -= 1
+                if user_id in self.tutor_queue:
+                    self.tutor_queue.remove(user_id)
+            print(f"Disconnected {user_id}. Online users: {self.online_users}, online tutors: {self.online_tutors}")
+        else:
+            print(f"User {user_id} not found in active_connections.")
+
+    async def send_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
 
     async def match_users(self):
         db = next(get_db())
         print("Matching users...")
         print(f"User Queue: {self.user_queue}")
         print(f"Tutor Queue: {self.tutor_queue}")
-        while self.user_queue and self.tutor_queue:
-            user_id = self.user_queue.popleft()
-            tutor_id = self.tutor_queue.popleft()
-            user_info = self.active_connections[user_id]
-            tutor_info = self.active_connections[tutor_id]
-            self.matched_pairs.append({"user": user_id, "tutor": tutor_id})
-            user_socket = user_info["socket"]
-            tutor_socket = tutor_info["socket"]
-            topic = user_info["topic"]
-            link = f'https://ngocdat.id.vn/{topic}-{user_id}'
-            
-            start_time = datetime.now()
-            end_time = start_time + timedelta(hours=1)
+        try:
+            while self.user_queue and self.tutor_queue:
+                user_id = self.user_queue.popleft()
+                tutor_id = self.tutor_queue.popleft()
+                user_info = self.active_connections[user_id]
+                tutor_info = self.active_connections[tutor_id]
+                self.matched_pairs.append({"user": user_id, "tutor": tutor_id})
+                user_socket = user_info["socket"]
+                tutor_socket = tutor_info["socket"]
+                topic = user_info["topic"]
+                link = f'https://ngocdat.id.vn/{topic}-{user_id}' if topic else f'https://ngocdat.id.vn/session-{user_id}'
 
-            # Retrieve real IDs based on usernames
-            user = db.query(User).filter(User.username == user_id).first()
-            tutor = db.query(Tutor).filter(Tutor.username == tutor_id).first()
+                start_time = datetime.now()
+                end_time = start_time + timedelta(hours=1)
 
-            new_meeting = Meeting(
-                link=link,
-                start_time=start_time,
-                end_time=end_time,
-                status='upcoming',
-                user_id=user.id,
-                tutor_id=tutor.id,
-                topic=topic  # Thêm topic vào đây
-            )
-            db.add(new_meeting)
-            db.commit()
+                # Retrieve real IDs based on usernames
+                user = db.query(User).filter(User.username == user_id).first()
+                tutor = db.query(Tutor).filter(Tutor.username == tutor_id).first()
 
-            # Create a new review with the user_id and tutor_id
-            new_review = Review(
-                user_id=user.id,
-                tutor_id=tutor.id,
-                meeting_id=new_meeting.id
-            )
-            db.add(new_review)
-            db.commit()
-
-            # Decrement remaining learning sessions for user
-            package = db.query(Package).filter(Package.user_id == user.id).first()
-            if package and package.remaining_learning_sessions > 0:
-                package.remaining_learning_sessions -= 1
+                new_meeting = Meeting(
+                    link=link,
+                    start_time=start_time,
+                    end_time=end_time,
+                    status='upcoming',
+                    user_id=user.id,
+                    tutor_id=tutor.id,
+                    topic=topic  # topic can be None here
+                )
+                db.add(new_meeting)
                 db.commit()
-            else:
-                raise AttributeError("User has no packages or no remaining learning sessions")
 
-            # Add entry to TutorEarningsHistory
-            base_earnings = 60000
-            new_earning = TutorEarningsHistory(
-                tutor_id=tutor.id,
-                date=start_time.date(),
-                session_id=new_meeting.id,
-                base_earnings=base_earnings,
-                total_earnings=base_earnings
-            )
-            db.add(new_earning)
-            db.commit()
+                new_review = Review(
+                    user_id=user.id,
+                    tutor_id=tutor.id,
+                    meeting_id=new_meeting.id
+                )
+                db.add(new_review)
+                db.commit()
 
-            # Update tutor's balance
-            tutor.balance += base_earnings
-            db.commit()
+                # Decrement remaining learning sessions for user
+                package = db.query(Package).filter(Package.user_id == user.id).first()
+                if package and package.remaining_learning_sessions > 0:
+                    package.remaining_learning_sessions -= 1
+                    db.commit()
+                else:
+                    raise AttributeError("User has no packages or no remaining learning sessions")
 
-            await user_socket.send_json({"redirect_url": 'https://speak.id.vn/user/meeting'})
-            await tutor_socket.send_json({"redirect_url": 'https://speak.id.vn/tutor/meeting'})
+                base_earnings = 60000
+                new_earning = TutorEarningsHistory(
+                    tutor_id=tutor.id,
+                    date=start_time.date(),
+                    session_id=new_meeting.id,
+                    base_earnings=base_earnings,
+                    total_earnings=base_earnings,
+                    bonus_type = "teaching"
+                )    
+                db.add(new_earning)
+                db.commit()
 
-        db.close()
+                tutor.balance += base_earnings
+                db.commit()
 
-# class ConnectionManager:
-#     def __init__(self):
-#         self.active_connections: Dict[str, WebSocket] = {}
-#         self.online_users = 0
-#         self.online_tutors = 0
-#         self.user_queue = deque()
-#         self.tutor_queue = deque()
-#         self.matched_pairs = []
-
-#     async def connect(self, websocket: WebSocket, user_id: str, user_type: str):
-#         await websocket.accept()
-#         self.active_connections[user_id] = {"socket": websocket, "type": user_type}
-#         if user_type == "user":
-#             self.online_users += 1
-#             self.user_queue.append(user_id)
-#         elif user_type == "tutor":
-#             self.online_tutors += 1
-#             self.tutor_queue.append(user_id)
-#         print(f"Online users: {self.online_users}, online tutors: {self.online_tutors}")  # Print the number of online users and tutors
-#         await self.match_users()
-
-#     async def match_users(self):
-#         db = next(get_db())
-#         print("Matching users...")
-#         print(f"User Queue: {self.user_queue}")
-#         print(f"Tutor Queue: {self.tutor_queue}")
-#         while self.user_queue and self.tutor_queue:
-#             user_id = self.user_queue.popleft()
-#             tutor_id = self.tutor_queue.popleft()
-#             self.matched_pairs.append({"user": user_id, "tutor": tutor_id})
-#             user_socket = self.active_connections[user_id]["socket"]
-#             tutor_socket = self.active_connections[tutor_id]["socket"]
-            
-#             redirect_url = f"https://solulu4u.com/test"
-#             start_time = datetime.now()
-#             end_time = start_time + timedelta(hours=1)
-
-       
-#             #Bi nham user id voi user name
-#             user_id_real = db.query(User).filter(User.username == user_id).first().id
-#             tutor_id_real = db.query(Tutor).filter(Tutor.username == tutor_id).first().id
-
-#             new_meeting = Meeting(
-#                 link=redirect_url,
-#                 start_time=start_time,
-#                 end_time=end_time,
-#                 status='upcoming',
-#                 user_id=user_id_real,
-#                 tutor_id=tutor_id_real
-#             )
-#             db.add(new_meeting)
-#             db.commit()
-#             await user_socket.send_json({"redirect_url": redirect_url})
-#             await tutor_socket.send_json({"redirect_url": redirect_url})
-
-            
-
-    def disconnect(self, user_id: str):
-        user_type = self.active_connections[user_id]["type"]
-        del self.active_connections[user_id]
-        if user_type == "user":
-            self.online_users -= 1
-            if user_id in self.user_queue:
-                self.user_queue.remove(user_id)
-        elif user_type == "tutor":
-            self.online_tutors -= 1
-            if user_id in self.tutor_queue:
-                self.tutor_queue.remove(user_id)
-
-    async def send_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+                await user_socket.send_json({"redirect_url": 'https://speak.id.vn/user/meeting'})
+                await tutor_socket.send_json({"redirect_url": 'https://speak.id.vn/tutor/meeting'})
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            db.close()
 
 manager = ConnectionManager()
 @app.websocket("/api/grammar/1")
@@ -786,20 +774,8 @@ async def websocket_endpoint(websocket: WebSocket):
 #     except WebSocketDisconnect:
 #         manager.disconnect(user_id)
 
-@app.websocket("/api/ws/{user_id}/{user_type}/{topic}")
-async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str, topic: str, background_tasks: BackgroundTasks):
-    await manager.connect(websocket, user_id, user_type, topic)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            if data == "ping":
-                if manager.online_users > 0 and manager.online_tutors > 0:
-                    background_tasks.add_task(manager.match_users, background_tasks)
-                await websocket.send_json({"users": manager.online_users, "user_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "user"],
-                                           "tutors": manager.online_tutors, "tutor_ids": [conn for conn, details in manager.active_connections.items() if details["type"] == "tutor"],
-                                           "matched_pairs": manager.matched_pairs})
-    except WebSocketDisconnect:
-        manager.disconnect(user_id)
+
+
 
 class UserStatusManager:
     def __init__(self):
@@ -850,7 +826,14 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str)
             data = await websocket.receive_text()
             # Xử lý dữ liệu nhận được từ websocket tại đây
     except WebSocketDisconnect:
+        await safe_disconnect(user_id)
+
+async def safe_disconnect(user_id: str):
+    try:
         await online.disconnect(user_id)
+    except KeyError:
+        # Log the error or handle it appropriately
+        print(f"User ID {user_id} not found in active users")
 
 
 
@@ -919,7 +902,7 @@ async def websocket_endpoint(websocket: WebSocket):
             elif role == 'tutor':
                 tutor = db.query(Tutor).filter(Tutor.username == username).first()
                 if tutor:
-                    meeting = db.query(Meeting).filter(Meeting.tutor_id == tutor.id, Meeting.status == 'upcoming').first()
+                    meeting = db.query(Meeting).filter(Meeting.tutor_id == tutor.id, Meeting.status == 'upcoming').order_by(desc(Meeting.start_time)).first()
                     if meeting:
                         remaining_minutes = (meeting.end_time - datetime.now()).total_seconds() / 60
                         if remaining_minutes < 0:
@@ -1050,13 +1033,13 @@ class UserReviewCreate(BaseModel):
     meeting_id: int
 
 
-
-
 @app.put("/api/user/review")
 def update_review(review: UserReviewCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     user_in_db = db.query(User).filter(User.username == current_user.username).first()
-    meeting = db.query(Meeting).filter(Meeting.id == review.meeting_id).first()
+    if not user_in_db:
+        raise HTTPException(status_code=404, detail="User not found")
 
+    meeting = db.query(Meeting).filter(Meeting.id == review.meeting_id).first()
     if not meeting or meeting.user_id != user_in_db.id:
         raise HTTPException(status_code=400, detail="Invalid meeting ID")
 
@@ -1070,10 +1053,49 @@ def update_review(review: UserReviewCreate, current_user: User = Depends(get_cur
     review_in_db.user_suggest = review.user_suggest
     review_in_db.user_reviewed = True
 
+    # Check if the user rating is 5 stars
+    if review.user_rating == 5:
+        tutor = db.query(Tutor).filter(Tutor.id == meeting.tutor_id).first()
+        if not tutor:
+            raise HTTPException(status_code=404, detail="Tutor not found")
+        
+        # Update tutor's balance and add a bonus entry
+        tutor.balance += 5000
+        bonus_entry = TutorEarningsHistory(
+            tutor_id=tutor.id,
+            session_id=meeting.id,
+            base_earnings=5000.0,
+            bonus_type="High rating from student"
+        )
+        db.add(bonus_entry)
+
     db.commit()
     db.refresh(review_in_db)
 
     return review_in_db
+
+# @app.put("/api/user/review")
+# def update_review(review: UserReviewCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+#     user_in_db = db.query(User).filter(User.username == current_user.username).first()
+#     meeting = db.query(Meeting).filter(Meeting.id == review.meeting_id).first()
+
+#     if not meeting or meeting.user_id != user_in_db.id:
+#         raise HTTPException(status_code=400, detail="Invalid meeting ID")
+
+#     review_in_db = db.query(Review).filter(Review.meeting_id == review.meeting_id).first()
+#     if not review_in_db:
+#         raise HTTPException(status_code=404, detail="Review not found")
+
+#     # Update the review fields
+#     review_in_db.user_rating = review.user_rating
+#     review_in_db.user_feedback = review.user_feedback
+#     review_in_db.user_suggest = review.user_suggest
+#     review_in_db.user_reviewed = True
+
+#     db.commit()
+#     db.refresh(review_in_db)
+
+#     return review_in_db
 
 
 
@@ -1675,3 +1697,47 @@ def get_meetings():
             tutor_suggest=review.tutor_suggest if review else None,
         ))
     return meeting_responses
+
+
+@app.get("/api/get_remain")
+def get_remain(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    username = user.username
+    user = db.query(User).filter(User.username == username).first()
+    
+    if not user:
+        return {"error": "User not found"}
+    
+    package = db.query(Package).filter(Package.user_id == user.id).first()
+    
+    if not package:
+        return {"error": "Package not found"}
+    
+    return {
+        "remaining_learning_sessions": package.remaining_learning_sessions,
+        "remaining_ai_conversations": package.remaining_ai_conversations
+    }
+
+
+
+@app.get("/api/tutor/earnings", response_model=List[EarningsHistory])
+async def get_tutor_earnings(user: User = Depends(get_current_user)):
+    db = next(get_db())
+    username = user.username
+    tutor = db.query(Tutor).filter(Tutor.username == username).first()
+
+    if not tutor:
+        raise HTTPException(status_code=404, detail="Tutor not found")
+
+    earnings = db.query(TutorEarningsHistory).join(Meeting).filter(TutorEarningsHistory.tutor_id == tutor.id).all()
+    results = []
+    for earning in earnings:
+        result = {
+            "id": earning.id,
+            "date": earning.date,
+            "username": earning.session.user.username,
+            "topic": earning.session.topic,
+            "base_earnings": earning.base_earnings,
+            "bonus_type": earning.bonus_type or "",  # Default to empty string if None
+        }
+        results.append(result)
+    return results

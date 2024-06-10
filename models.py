@@ -208,10 +208,9 @@ class TutorEarningsHistory(Base):
     tutor_id = Column(Integer, ForeignKey('tutors.id'))
     date = Column(Date, default=func.current_date())
     session_id = Column(Integer, ForeignKey('meetings.id'), nullable=True)
-    base_earnings = Column(Float, default=0.0)
-    bonus = Column(Float, default=0.0)
+    base_earnings = Column(Integer, default=0)
     bonus_type = Column(String, nullable=True)  # Add this column to record the type of bonus
-    total_earnings = Column(Float, default=0.0)
+    total_earnings = Column(Integer, default=0)
 
     tutor = relationship("Tutor", back_populates="earnings_history")
     session = relationship("Meeting", back_populates="earnings_history")
